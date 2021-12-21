@@ -5,8 +5,10 @@ import torch
 import torch.nn as nn
 import torch.optim as optim
 from torchvision import models, transforms
-from flask import Flask, jsonify, request
-
+from flask import Flask,  request
+import cv2
+import numpy as np
+import urllib.request
 import numpy as np
 
 app = Flask(__name__)
@@ -30,7 +32,7 @@ model.load_state_dict(torch.load('./model/modelhospital_weights.pth', map_locati
 model.to(device)
 model.eval()
 
-class_names=['장미 검은무늬병', '장미 점박이응애', '장미 흰가루병']
+class_names=['장미검은무늬병', '장미 점박이응애', '장미 흰가루병']
 
 #이미지 데이터 학습할 때와 동일하게 전처리
 transforms_test = transforms.Compose([
@@ -39,22 +41,19 @@ transforms_test = transforms.Compose([
     transforms.Normalize([0.485, 0.456, 0.406], [0.229, 0.224, 0.225])
 ])
 
-def imshow(input, title):
-    # torch.Tensor -> numpy
-    input = input.numpy().transpose((1, 2, 0))
-    # 이미지 정규화 해제하기
-    mean = np.array([0.485, 0.456, 0.406])
-    std = np.array([0.229, 0.224, 0.225])
-    input = std * input + mean
-    input = np.clip(input, 0, 1)
-    # 이미지 출력
-    plt.imshow(input)
-    plt.title(title)
-    plt.show()
-
-
-
-
+# #이미지 확인 용도로 사용함
+# def imshow(input):
+#     # torch.Tensor -> numpy
+#     input = input.numpy().transpose((1, 2, 0))
+#     # 이미지 정규화 해제하기
+#     mean = np.array([0.485, 0.456, 0.406])
+#     std = np.array([0.229, 0.224, 0.225])
+#     input = std * input + mean
+#     input = np.clip(input, 0, 1)
+#     # 이미지 출력
+#     plt.imshow(input)
+#     # plt.title(title)
+#     plt.show()
 
 
 
@@ -67,20 +66,23 @@ def predict():
     requestImg = request.get_json()
     url = requestImg['imageUrl']
     print(url[0])
+    urls = url[0]
 
-#predict 하는 코드 ====================
     image = Image.open('./rose.jpg')
-
+    # image = Image.open(urls)
+    
     image = transforms_test(image).unsqueeze(0).to(device)
     print(image)
     with torch.no_grad():
         outputs = model(image)
         _, preds = torch.max(outputs, 1)
-        imshow(image.cpu().data[0], title='예측 결과: ' + class_names[preds[0]])
+        # imshow(image.cpu().data[0], '예측 결과: ' + class_names[preds[0]])
         print(class_names[preds[0]])
+        disease = class_names[preds[0]]
 
-    # return class_names[preds[0]]
-    return '검은무늬장미'
+    return disease
+
+
 
 if __name__ == "__main__":
     app.run(debug=True)
