@@ -10,6 +10,8 @@ import cv2
 import numpy as np
 import urllib.request
 import numpy as np
+import os
+import time
 
 app = Flask(__name__)
 
@@ -65,10 +67,19 @@ def predict():
     # 전송된 이미지 받기
     requestImg = request.get_json()
     url = requestImg['imageUrl']
-    print(url[0])
-    urls = url[0]
+    
+    os.system("curl " + url[0] + " > test.jpg")
+    start = time.time()
+    # 이미지 다운로드 시간 체크
+    print(time.time() - start)
 
-    image = Image.open('./rose.jpg')
+    # 저장 된 이미지 확인
+    img = Image.open("test.jpg") 
+    # testimg = url[0].save("./test.jpg")
+    # print(url[0])
+    # urls = url[0]
+
+    image = Image.open('test.jpg')
     # image = Image.open(urls)
     
     image = transforms_test(image).unsqueeze(0).to(device)
