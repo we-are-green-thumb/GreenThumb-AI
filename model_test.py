@@ -8,17 +8,22 @@ from torchvision import models, transforms
 import numpy as np
 
  # device 객체
-device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
+# device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
+device = torch.device('cuda') if torch.cuda.is_available() else torch.device('cpu')
+
 
 #전이모델 받은 것 로딩
 model = models.resnet34()
 num_features = model.fc.in_features
 model.fc = nn.Linear(num_features, 3)
-model = model.to(device)
+# model = model.to(device)
 
 criterion = nn.CrossEntropyLoss()
 optimizer = optim.SGD(model.parameters(), lr=0.001, momentum=0.9)
-model.load_state_dict(torch.load('/content/drive/MyDrive/ColabNotebooks/modelhospital_weights.pth'))
+# model.load_state_dict(torch.load('./model/modelhospital_weights.pth', map_location='cuda:0'))
+
+model.load_state_dict(torch.load('./model/modelhospital_weights.pth', map_location=device))
+model.to(device)
 model.eval()
 
 class_names=['장미 검은무늬병', '장미 점박이응애', '장미 흰가루병']
@@ -43,8 +48,9 @@ def imshow(input, title):
     plt.title(title)
     plt.show()
 
+
 #predict 하는 코드 ====================
-image = Image.open('/content/drive/MyDrive/ColabNotebooks/5.pp_2851_1.jpg')
+image = Image.open('./rose.jpg')
 
 image = transforms_test(image).unsqueeze(0).to(device)
 
