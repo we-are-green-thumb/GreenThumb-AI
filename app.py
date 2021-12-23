@@ -29,12 +29,12 @@ model.fc = nn.Linear(num_features, 5)
 criterion = nn.CrossEntropyLoss()
 optimizer = optim.SGD(model.parameters(), lr=0.001, momentum=0.9)
 
-model.load_state_dict(torch.load('./model/modelhospital_weights2.pth', map_location=device))
+model.load_state_dict(torch.load('./model/modelhospital_weights3.pth', map_location=device))
 model.to(device)
 model.eval()
  
-class_names= ['검은무늬병', '과습', '물부족', '정상', '흰가루병']
-# class_names=['장미검은무늬병', '장미 점박이응애', '장미 흰가루병']
+# class_names= ['검은무늬병', '과습', '물부족', '정상', '흰가루병']
+class_names=['black', 'normal', 'overwater', 'waterneed', 'white']
 
 #이미지 데이터 학습할 때와 동일하게 전처리
 transforms_test = transforms.Compose([
