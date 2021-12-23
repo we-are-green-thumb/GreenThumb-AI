@@ -12,6 +12,8 @@ import urllib.request
 import numpy as np
 import os
 import time
+from util import util
+
 
 app = Flask(__name__)
 
@@ -32,6 +34,7 @@ model.to(device)
 model.eval()
  
 class_names= ['검은무늬병', '과습', '물부족', '정상', '흰가루병']
+# class_names=['장미검은무늬병', '장미 점박이응애', '장미 흰가루병']
 
 #이미지 데이터 학습할 때와 동일하게 전처리
 transforms_test = transforms.Compose([
@@ -68,8 +71,14 @@ def predict():
         print(class_names[preds[0]])
         disease = class_names[preds[0]]
         print(type(disease))
-
-    return jsonify(disease)
+    
+    # result = ''
+    # for char in disease :
+    #     print(char)
+    #     result += char;
+    
+    # return  util.join_jamos(result)
+    return disease
 
 
 
